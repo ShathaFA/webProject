@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Coupons</h1>
+{% if coupons %}
+<table class="coupon-table">
+<thead>
+<tr>
+<th>Sponsor</th>
+<th>Points Needed</th>
+<th>Expiration Date</th>
+<th>Redeem</th>
+</tr>
+</thead>
+<tbody>
+{% for coupon in coupons %}
+<tr>
+<td>{{ coupon.sponsor_name }}</td>
+<td>{{ coupon.points_needed }}</td>
+<td>{{ coupon.expiration_date }}</td>
+<td>
+{% if request.user.points >= coupon.points_needed %}
+<form method="post" action="{% url 'redeem_coupon' coupon.id %}">
+{% csrf_token %}
+<input type="submit" value="Redeem">
+</form>
+{% else %}
+<span>You need {{ coupon.points_needed|subtract:request.user.points }} more points to redeem this coupon.</span>
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p>No coupons available.</p>
+{% endif %}
+
+<style>
+.coupon-table {
+border-collapse: collapse;
+margin-bottom: 20px;
+}
+
+.coupon-table th,
+.coupon-table td {
+border: 2px solid #ffcc00; /* darker yellow color */
+padding: 10px;
+}
+
+.coupon-table th {
+background-color: #fffacd; /* yellow color */
+font-weight: bold;
+text-align: center;
+}
+
+.coupon-table td {
+text-align: left;
+}
+
+.coupon-footer input[type="submit"] {
+background-color: #ffcc00; /* darker yellow color */
+color: #fff;
+border: none;
+border-radius: 5px;
+font-size: 16px;
+font-weight: bold;
+padding: 10px 20px;
+cursor: pointer;
+}
+
+.coupon-footer input[type="submit"]:hover {
+background-color: #ffc200; /* slightly darker yellow color */
+}
+
+.coupon-points-needed {
+font-size: 16px;
+color: #666; /* gray color */
+}
+</style>
+{% endblock %}
